@@ -45,7 +45,7 @@ public class Solution {
         }
 
         for (int i = ratings.length - 2; i >= 0; i--) {
-            if (ratings[i] > ratings[i+1]) {
+            if (ratings[i] > ratings[i + 1]) {
                 candy[i] = Math.max(candy[i], candy[i + 1] + 1);
             }
         }
@@ -103,15 +103,15 @@ public class Solution {
         for (int i = 0; i < flowerbed.length; i++) {
             // 判断当前位置是否为0，如果是则盘判断左右是否有1，没有则count--
             if (flowerbed[i] == 0) {
-                if (i == 0 && flowerbed[i+1] != 1) {
+                if (i == 0 && flowerbed[i + 1] != 1) {
                     flowerbed[i] = 1;
                     count--;
                 }
-                if (i == flowerbed.length-1 && flowerbed[i-1] != 1) {
+                if (i == flowerbed.length - 1 && flowerbed[i - 1] != 1) {
                     flowerbed[i] = 1;
                     count--;
                 }
-                if ((i != 0 && i != flowerbed.length - 1) && flowerbed[i+1] != 1 && flowerbed[i-1] != 1) {
+                if ((i != 0 && i != flowerbed.length - 1) && flowerbed[i + 1] != 1 && flowerbed[i - 1] != 1) {
                     flowerbed[i] = 1;
                     count--;
                 }
@@ -125,16 +125,149 @@ public class Solution {
         // 定义一个的数组，新数组值默认为0
         int[] a = new int[flowerbed.length + 2];
         // 赋值
-        for(int i=1; i<a.length-1; i++){
-            a[i] = flowerbed[i-1];
+        for (int i = 1; i < a.length - 1; i++) {
+            a[i] = flowerbed[i - 1];
         }
         int ans = 0;
-        for(int i=1; i<a.length-1; i++){
-            if(a[i]==0 && a[i-1] == 0 && a[i+1] == 0){
+        for (int i = 1; i < a.length - 1; i++) {
+            if (a[i] == 0 && a[i - 1] == 0 && a[i + 1] == 0) {
                 ans++;
                 a[i] = 1;
             }
         }
         return ans >= n;
+    }
+
+    /**
+     * 基础思路是按照下标遍历一遍，遇到就射箭-最大射箭数
+     * 考虑要使用最小的箭，要从跨度最大的开始考虑
+     * 先排序，排序完后从最大的开始遍历下标
+     */
+    public int findMinArrowShots(int[][] points) {
+        if (points.length == 1) {
+            return 1;
+        }
+        int result = 0;
+        // 完成排序, o[0] -> (0[0][0], o[0][1])
+        Arrays.sort(points, (o1, o2) -> (o2[1] - o2[0]) - (o1[1] - o1[0]));
+        Set<Integer> usedIndex = new HashSet<>();
+        // 遍历数组
+        for (int i = 0; i < points.length; i++) {
+            // 遍历坐标
+            if (usedIndex.contains(i)) {
+                continue;
+            }
+            usedIndex.add(i);
+            int start = points[i][0];
+            int end = points[i][1];
+            Map<Integer, Set<Integer>> map = new HashMap<>();
+            int beforeLength = -1;
+            int maxIndex = -1;
+            while (start <= end) {
+                Set<Integer> temp = new HashSet<>();
+                for (int i1 = 0; i1 < points.length; i1++) {
+                    // 不比较当前的
+                    if (usedIndex.contains(i1)) {
+                        continue;
+                    }
+                    // 能够击中其他气球，要记录个数，记录坐标，set既可以取到个数也可以取到下标
+                    if (points[i1][0] <= start && start <= points[i1][1]) {
+                        temp.add(i1);
+                    }
+                }
+                map.put(start, temp);
+                if (temp.size() > beforeLength) {
+                    beforeLength = temp.size();
+                    maxIndex = start;
+                }
+                start++;
+            }
+            if (maxIndex != -1) {
+                usedIndex.addAll(map.get(maxIndex));
+                map = new HashMap<>();
+            }
+            result++;
+        }
+        return result;
+    }
+
+    public int findMinArrowShotsBetter(int[][] points) {
+        int result = 1;
+        // 完成排序, o[0] -> (0[0][0], o[0][1])
+        Arrays.sort(points, Comparator.comparingInt(a -> a[0]));
+        // 遍历数组，排序之后只用一直向前遍历就行，比较当前和下一个气球能不能一起打爆，如果可以就不加
+        for (int i = 1; i < points.length; i++) {
+            // 两个气球没有碰到一起，已经按X_start排序了，因此不可能出现points[i][0] > points[i-1][1]但是重叠的情况
+            if (points[i][0] > points[i - 1][1]) {
+                result++;
+            } else {
+                // 如果两个气球是碰到一起的，则需要融合边界
+                points[i][1] = Math.min(points[i][1], points[i-1][1]);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 需要记录每个字符第一次和最后一次出现的位置，转换成区间
+     * @param s
+     * @return
+     */
+    public List<Integer> partitionLabels(String s) {
+        List<Integer> result = new ArrayList<>();
+        // 先转换成区间，然后看区间内的是否都满足条件，满足就归并为以一个区间，不满足则查找下一个元素的最后位置
+        Map<Character, int[][]> partition = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            // partition包含则表示已经计算过该字符的区间了
+            if (partition.containsKey(s.charAt(i))) {
+                continue;
+            }
+            int[][] index = new int[][] {{i, s.lastIndexOf(s.charAt(i))}};
+            partition.put(s.charAt(i), index);
+        }
+
+        for (int i = 0; i < s.length();) {
+            int[][] ints = partition.get(s.charAt(i));
+            // 判断区间内元素是否满足条件
+            int start = ints[0][0];
+            int end = ints[0][1];
+            // 可以优化的地方：不用再去遍历区间内的元素，可以直接遍历每个元素，动态更新end位置，如果被包含则end不变，如果未包含则end自动扩大
+            // 当end == i时，则说明当前区间是满足条件的
+            while (start <= end) {
+                int[][] ints1 = partition.get(s.charAt(start));
+                // 超出区域
+                if (ints1[0][1] > end) {
+                    end = ints1[0][1];
+                }
+                start++;
+            }
+            result.add(end - ints[0][0]+1);
+            i = end+1;
+        }
+        return result;
+    }
+
+    public List<Integer> partitionLabelsBetter(String s) {
+        //用来标记每个字母最后一次出现的位置
+        int[] last = new int[26];
+        int n = s.length();
+        for(int i = 0; i < n; i++){
+            //记录每个字母最后一次出现的位置
+            last[s.charAt(i) - 'a'] = i;
+        }
+        List<Integer> list = new ArrayList();
+        int start = 0, end = 0;
+        for(int i = 0; i < n; i++){
+            //若加入当前字符，最远位置应该在之前最远和当前最远取最大值
+            end = Math.max(end, last[s.charAt(i) - 'a']);
+            //若遍历到最远的位置依然没有更远的位置出现，证明已经到达之前字符串的最远位置，可以分割
+            if(i == end){
+                //分割字符串，添加这段串的长度
+                list.add(end - start + 1);
+                //把起始位置更新到下个串的第一位，也就是上个串的后一位
+                start = end + 1;
+            }
+        }
+        return list;
     }
 }
