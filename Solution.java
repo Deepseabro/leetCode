@@ -202,7 +202,7 @@ public class Solution {
                 result++;
             } else {
                 // 如果两个气球是碰到一起的，则需要融合边界
-                points[i][1] = Math.min(points[i][1], points[i-1][1]);
+                points[i][1] = Math.min(points[i][1], points[i - 1][1]);
             }
         }
         return result;
@@ -210,6 +210,7 @@ public class Solution {
 
     /**
      * 需要记录每个字符第一次和最后一次出现的位置，转换成区间
+     *
      * @param s
      * @return
      */
@@ -222,11 +223,11 @@ public class Solution {
             if (partition.containsKey(s.charAt(i))) {
                 continue;
             }
-            int[][] index = new int[][] {{i, s.lastIndexOf(s.charAt(i))}};
+            int[][] index = new int[][]{{i, s.lastIndexOf(s.charAt(i))}};
             partition.put(s.charAt(i), index);
         }
 
-        for (int i = 0; i < s.length();) {
+        for (int i = 0; i < s.length(); ) {
             int[][] ints = partition.get(s.charAt(i));
             // 判断区间内元素是否满足条件
             int start = ints[0][0];
@@ -241,8 +242,8 @@ public class Solution {
                 }
                 start++;
             }
-            result.add(end - ints[0][0]+1);
-            i = end+1;
+            result.add(end - ints[0][0] + 1);
+            i = end + 1;
         }
         return result;
     }
@@ -251,17 +252,17 @@ public class Solution {
         //用来标记每个字母最后一次出现的位置
         int[] last = new int[26];
         int n = s.length();
-        for(int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             //记录每个字母最后一次出现的位置
             last[s.charAt(i) - 'a'] = i;
         }
         List<Integer> list = new ArrayList();
         int start = 0, end = 0;
-        for(int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             //若加入当前字符，最远位置应该在之前最远和当前最远取最大值
             end = Math.max(end, last[s.charAt(i) - 'a']);
             //若遍历到最远的位置依然没有更远的位置出现，证明已经到达之前字符串的最远位置，可以分割
-            if(i == end){
+            if (i == end) {
                 //分割字符串，添加这段串的长度
                 list.add(end - start + 1);
                 //把起始位置更新到下个串的第一位，也就是上个串的后一位
@@ -269,5 +270,57 @@ public class Solution {
             }
         }
         return list;
+    }
+
+    /**
+     * 二分查找
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        int mid;
+        while (left <= right) {
+            mid = (left + right) / 2;
+            if (nums[mid] < target) {
+                left = mid + 1;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] == target) {
+                return mid;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * x 的平方根
+     * 通过二分查找，比如9的平方根，则答案一定在[1,9]之间，通过二分法找到最相近的
+     *
+     * @param x
+     * @return
+     */
+    public int mySqrt(int x) {
+        if (x == 0) {
+            return x;
+        }
+        int left = 1;
+        int right = x;
+        int mid, sqrt;
+        while (left <= right) {
+            mid = left + (right - left) / 2;
+            sqrt = x / mid;
+            if (sqrt == mid) {
+                return mid;
+            } else if (mid > sqrt) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return right;
     }
 }
