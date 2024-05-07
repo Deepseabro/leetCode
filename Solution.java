@@ -323,4 +323,55 @@ public class Solution {
         }
         return right;
     }
+
+    /**
+     * 问题在于在找到一个满足条件的元素后，如何判断是第几个元素，怎么继续查找(元素处在中间如何解决)-两边分别查询
+     * 大体思路上还是二分法，但是循环如何进行
+     * 如果找到了一个满足条件的元素后，右边的值一定大于等于target
+     * 如果只找到一个，那么答案一定是这一个元素加上他的相邻上一个
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int[] searchRange(int[] nums, int target) {
+        int[] result = new int[] {-1,-1};
+        int left = 0;
+        int right = nums.length - 1;
+        int mid;
+        List<Integer> index = new ArrayList<>();
+        // 查右边
+        while (left <= right) {
+            mid = (left + right) / 2;
+            if (nums[mid] == target) {
+                index.add(mid);
+                left = mid + 1;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        // 查左边
+        left = 0;
+        right = nums.length - 1;
+        while (left <= right) {
+            mid = (left + right) / 2;
+            if (nums[mid] == target) {
+                index.add(mid);
+                right = mid - 1;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        if (index.size() == 1) {
+            result[0] = index.getFirst();
+            result[1] = index.getFirst();
+        } else if (index.size() > 1){
+            result[0] = index.stream().reduce(index.get(0), Integer::min);
+            result[1] = index.stream().reduce(index.get(0), Integer::max);
+        }
+        return result;
+    }
 }
