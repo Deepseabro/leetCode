@@ -374,4 +374,44 @@ public class Solution {
         }
         return result;
     }
+
+    /**
+     * 简单的思路：要删除元素，并且返回删除后的长度，则删除元素置为0，长度遇到val则减一；
+     * @param nums
+     * @param val
+     * @return
+     */
+    public int removeElement(int[] nums, int val) {
+        int fastIndex = 0;
+        int slowIndex = 0;
+        int count = 0;
+        while (fastIndex < nums.length) {
+            if (nums[fastIndex] == val) {
+                fastIndex++;
+            } else {
+                nums[slowIndex] = nums[fastIndex];
+                slowIndex++;
+                fastIndex++;
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int removeDuplicates(int[] nums) {
+        if (nums.length <= 1) {
+            return nums.length;
+        }
+        int slowIndex = 0;
+        int fastIndex = 1;
+        int count = 1;
+        while (fastIndex < nums.length) {
+            if (nums[fastIndex] != nums[slowIndex]) {
+                nums[++slowIndex] = nums[fastIndex];
+                count++;
+            }
+            fastIndex++;
+        }
+        return count;
+    }
 }
