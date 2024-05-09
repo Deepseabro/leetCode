@@ -414,4 +414,91 @@ public class Solution {
         }
         return count;
     }
+
+    /**
+     * 思路一：遇到0就跟末尾的元素交换，但是不满足保持非零元素的相对顺序
+     * 思路二：先把非0元素提前，再处理末尾0
+     * @param nums
+     */
+    public void moveZeroes(int[] nums) {
+        int slowIndex = 0;
+        int fastIndex = 0;
+        int count = 0;
+        // 将非0元素提前
+        while (fastIndex < nums.length) {
+            if (nums[fastIndex] != 0) {
+                nums[slowIndex++] = nums[fastIndex];
+            } else {
+                count++;
+            }
+            fastIndex++;
+        }
+        // 处理末尾0元素
+        for (int i = nums.length - count; i < nums.length; i++) {
+            nums[i] = 0;
+        }
+    }
+
+    /**
+     * 思路：其实跟上面移除0的类似，就是把不需要移除的元素提前，然后根据长度和内容比较，
+     * 怎么移除不清楚，因为需要处理两个元素，涉及到长度移除判断
+     * 思路二：搞个栈，读到#出栈元素，其他元素进栈，然后比较
+     * @param s
+     * @param t
+     * @return
+     */
+    public boolean backspaceCompare(String s, String t) {
+        Stack<Character> stack = new Stack<>();
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '#') {
+                if (stack.size() > 0) {
+                    stack.pop();
+                }
+            } else {
+                stack.push(chars[i]);
+            }
+        }
+        String st = stack.toString();
+
+        stack = new Stack<>();
+        chars = t.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '#') {
+                if (stack.size() > 0) {
+                    stack.pop();
+                }
+            } else {
+                stack.push(chars[i]);
+            }
+        }
+        String tt = stack.toString();
+        return st.equals(tt);
+    }
+
+    /**
+     * 双指针问题，指针不但可以往前走，也可以往后走，思路不要太固定
+     * 本题思路：快慢指针，当前元素不是#号时，快指针给慢指针赋值，为#时则慢指针后退
+     * @param s
+     * @param t
+     * @return
+     */
+    public boolean backspaceCompareBetter(String s, String t) {
+        return removeBack(s).equals(removeBack(t));
+    }
+
+    public String removeBack(String s) {
+        int slowIndex = 0;
+        int fastIndex = 0;
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '#' && slowIndex != 0) {
+                slowIndex--;
+            } else if (chars[i] != '#'){
+                chars[slowIndex++] = chars[fastIndex];
+            }
+            fastIndex++;
+        }
+        return String.valueOf(chars, 0, slowIndex);
+    }
 }
