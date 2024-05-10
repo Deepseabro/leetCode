@@ -501,4 +501,50 @@ public class Solution {
         }
         return String.valueOf(chars, 0, slowIndex);
     }
+
+    /**
+     * 对已经有序的数组求平方，然后排序，关键点在于一定是左右两边的元素平方后值更大
+     * @param nums
+     * @return
+     */
+    public int[] sortedSquares(int[] nums) {
+        int leftIndex = 0;
+        int rightIndex = nums.length - 1;
+        int[] result = new int[nums.length];
+        int count = nums.length - 1;
+        while (leftIndex <= rightIndex) {
+            int temp1 = nums[rightIndex] * nums[rightIndex];
+            int temp2 = nums[leftIndex] * nums[leftIndex];
+            if (temp2 >= temp1) {
+                leftIndex++;
+                result[count--] = temp2;
+            } else if (temp2 < temp1) {
+                result[count--] = temp1;
+                rightIndex--;
+            }
+        }
+        return result;
+    }
+
+/**
+ * 快慢指针，计算慢指针到快指针的值，满足则循环减去slowIndex的值，直到不满足条件，每一次循环中都变更count
+ * @param target
+ * @param nums
+ * @return
+ */
+public int minSubArrayLen(int target, int[] nums) {
+    int count = Integer.MAX_VALUE;
+    int slowIndex = 0;
+    int fastIndex = 0;
+    int sum = 0;
+    while (fastIndex < nums.length) {
+        sum += nums[fastIndex];
+        while (sum >= target) {
+            count = Math.min(count, fastIndex - slowIndex + 1);
+            sum -= nums[slowIndex++];
+        }
+        fastIndex++;
+    }
+    return count == Integer.MAX_VALUE ? 0 : count;
+}
 }
