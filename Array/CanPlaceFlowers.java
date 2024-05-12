@@ -1,3 +1,5 @@
+package Array;
+
 public class CanPlaceFlowers {
     public static void main(String[] args) {
         Solution solution = new Solution();
