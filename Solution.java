@@ -1,3 +1,4 @@
+import javax.swing.plaf.IconUIResource;
 import java.util.*;
 
 public class Solution {
@@ -329,12 +330,13 @@ public class Solution {
      * 大体思路上还是二分法，但是循环如何进行
      * 如果找到了一个满足条件的元素后，右边的值一定大于等于target
      * 如果只找到一个，那么答案一定是这一个元素加上他的相邻上一个
+     *
      * @param nums
      * @param target
      * @return
      */
     public int[] searchRange(int[] nums, int target) {
-        int[] result = new int[] {-1,-1};
+        int[] result = new int[]{-1, -1};
         int left = 0;
         int right = nums.length - 1;
         int mid;
@@ -368,7 +370,7 @@ public class Solution {
         if (index.size() == 1) {
             result[0] = index.getFirst();
             result[1] = index.getFirst();
-        } else if (index.size() > 1){
+        } else if (index.size() > 1) {
             result[0] = index.stream().reduce(index.get(0), Integer::min);
             result[1] = index.stream().reduce(index.get(0), Integer::max);
         }
@@ -377,6 +379,7 @@ public class Solution {
 
     /**
      * 简单的思路：要删除元素，并且返回删除后的长度，则删除元素置为0，长度遇到val则减一；
+     *
      * @param nums
      * @param val
      * @return
@@ -418,6 +421,7 @@ public class Solution {
     /**
      * 思路一：遇到0就跟末尾的元素交换，但是不满足保持非零元素的相对顺序
      * 思路二：先把非0元素提前，再处理末尾0
+     *
      * @param nums
      */
     public void moveZeroes(int[] nums) {
@@ -443,6 +447,7 @@ public class Solution {
      * 思路：其实跟上面移除0的类似，就是把不需要移除的元素提前，然后根据长度和内容比较，
      * 怎么移除不清楚，因为需要处理两个元素，涉及到长度移除判断
      * 思路二：搞个栈，读到#出栈元素，其他元素进栈，然后比较
+     *
      * @param s
      * @param t
      * @return
@@ -479,6 +484,7 @@ public class Solution {
     /**
      * 双指针问题，指针不但可以往前走，也可以往后走，思路不要太固定
      * 本题思路：快慢指针，当前元素不是#号时，快指针给慢指针赋值，为#时则慢指针后退
+     *
      * @param s
      * @param t
      * @return
@@ -494,7 +500,7 @@ public class Solution {
         for (int i = 0; i < chars.length; i++) {
             if (chars[i] == '#' && slowIndex != 0) {
                 slowIndex--;
-            } else if (chars[i] != '#'){
+            } else if (chars[i] != '#') {
                 chars[slowIndex++] = chars[fastIndex];
             }
             fastIndex++;
@@ -504,6 +510,7 @@ public class Solution {
 
     /**
      * 对已经有序的数组求平方，然后排序，关键点在于一定是左右两边的元素平方后值更大
+     *
      * @param nums
      * @return
      */
@@ -526,25 +533,134 @@ public class Solution {
         return result;
     }
 
-/**
- * 快慢指针，计算慢指针到快指针的值，满足则循环减去slowIndex的值，直到不满足条件，每一次循环中都变更count
- * @param target
- * @param nums
- * @return
- */
-public int minSubArrayLen(int target, int[] nums) {
-    int count = Integer.MAX_VALUE;
-    int slowIndex = 0;
-    int fastIndex = 0;
-    int sum = 0;
-    while (fastIndex < nums.length) {
-        sum += nums[fastIndex];
-        while (sum >= target) {
-            count = Math.min(count, fastIndex - slowIndex + 1);
-            sum -= nums[slowIndex++];
+    /**
+     * 快慢指针，计算慢指针到快指针的值，满足则循环减去slowIndex的值，直到不满足条件，每一次循环中都变更count
+     *
+     * @param target
+     * @param nums
+     * @return
+     */
+    public int minSubArrayLen(int target, int[] nums) {
+        int count = Integer.MAX_VALUE;
+        int slowIndex = 0;
+        int fastIndex = 0;
+        int sum = 0;
+        while (fastIndex < nums.length) {
+            sum += nums[fastIndex];
+            while (sum >= target) {
+                count = Math.min(count, fastIndex - slowIndex + 1);
+                sum -= nums[slowIndex++];
+            }
+            fastIndex++;
         }
-        fastIndex++;
+        return count == Integer.MAX_VALUE ? 0 : count;
     }
-    return count == Integer.MAX_VALUE ? 0 : count;
-}
+
+    public int totalFruit(int[] fruits) {
+        int result = Integer.MIN_VALUE;
+        int left = 0;
+        int right = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        while (right < fruits.length) {
+            if (map.size() < 2 || map.containsKey(fruits[right])) {
+                map.put(fruits[right], map.getOrDefault(fruits[right], 0) + 1);
+                right++;
+            } else {
+                // 移除元素
+                result = Math.max(result, right - left);
+                while (map.size() == 2) {
+                    map.put(fruits[left], map.get(fruits[left]) - 1);
+                    if (map.get(fruits[left]) == 0) {
+                        map.remove(fruits[left]);
+                    }
+                    left++;
+                }
+            }
+        }
+        return Math.max(result, right - left);
+    }
+
+    /**
+     * 时间复杂度更高
+     * @param s
+     * @param t
+     * @return
+     */
+    public String minWindowOld(String s, String t) {
+        int left = 0;
+        int right = 0;
+        String result = "";
+        Map<Character, Integer> map = new HashMap<>();
+        // 初始化
+        for (char c : t.toCharArray()) {
+            map.put(c, map.getOrDefault(c,0)+1);
+        }
+        for (right = 0; right < s.length(); right++) {
+            if (map.containsKey(s.charAt(right))) {
+                map.put(s.charAt(right),map.get(s.charAt(right))-1);
+                while (checkResult(map)) {
+                    String substring = s.substring(left, right + 1);
+                    if (result.equals("") || result.length() > substring.length()) {
+                        result = substring;
+                    }
+                    if (map.containsKey(s.charAt(left))) {
+                        map.put(s.charAt(left), map.get(s.charAt(left))+1);
+                    }
+                    left++;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 滑动窗口，优化算法
+     * @param s
+     * @param t
+     * @return
+     */
+    public String minWindow(String s, String t) {
+        int left = 0;
+        int right = 0;
+        String result = "";
+        int count = t.length();
+        Map<Character, Integer> map = new HashMap<>();
+        Map<Character, Integer> need = new HashMap<>();
+        // 初始化
+        for (char c : t.toCharArray()) {
+            map.put(c, map.getOrDefault(c,0)+1);
+            need.put(c, need.getOrDefault(c,0)+1);
+        }
+        for (right = 0; right < s.length(); right++) {
+            if (map.containsKey(s.charAt(right))) {
+                map.put(s.charAt(right),map.get(s.charAt(right))-1);
+                if (map.get(s.charAt(right)) == 0) {
+                    count -= need.get(s.charAt(right));
+                }
+                while (count == 0) {
+                    String substring = s.substring(left, right + 1);
+                    if (result.equals("") || result.length() > substring.length()) {
+                        result = substring;
+                    }
+                    if (map.containsKey(s.charAt(left))) {
+                        map.put(s.charAt(left), map.get(s.charAt(left))+1);
+                        if (map.get(s.charAt(left)) > 0) {
+                            count += need.get(s.charAt(left));
+                        }
+                    }
+                    left++;
+                }
+            }
+        }
+        return result;
+    }
+
+    public Boolean checkResult(Map<Character, Integer> map) {
+        for (Map.Entry<Character, Integer> characterIntegerEntry : map.entrySet()) {
+            if (characterIntegerEntry.getValue() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
