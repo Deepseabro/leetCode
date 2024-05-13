@@ -665,4 +665,35 @@ public class Solution {
         }
         return true;
     }
+
+    /**
+     * 将步骤分解为四个过程，上左->上右，上右->下右，下右->下左，下左->上左
+     * 循环终止条件，有i，j
+     * @param n
+     * @return
+     */
+    public int[][] generateMatrix(int n) {
+        int[][] result = new int[n][n];
+        int count = 1;
+        int i, j, k, w, z;
+        for (i = 0; i < n; i++) {
+            // 上左->上右
+            for (j = i; j < n - i; j++) {
+                result[i][j] = count++;
+            }
+            // 上右->下右
+            for (k = i + 1; k < n - i; k++) {
+                result[k][j-1] = count++;
+            }
+            // 下右->下左
+            for (w = k - 2; w > i; w--) {
+                result[k-1][w] = count++;
+            }
+            // 下左->上左
+            for (z = j - 1; z > i; z--) {
+                result[z][w] = count++;
+            }
+        }
+        return result;
+    }
 }
