@@ -696,4 +696,35 @@ public class Solution {
         }
         return result;
     }
+
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> result = new ArrayList<>();
+        int i, j, k, w, z;
+        int n = matrix[0].length;
+        int m = matrix.length;
+        int count = n * m;
+        for (i = 0; i < n && count > 0; i++) {
+            // 上左->上右
+            for (j = i; j < n - i; j++) {
+                result.add(matrix[i][j]);
+                count--;
+            }
+            // 上右->下右
+            for (k = i + 1; k < m - i; k++) {
+                result.add(matrix[k][j-1]);
+                count--;
+            }
+            // 下右->下左
+            for (w = k - 1; w >= i; w--) {
+                result.add(matrix[k-1][w]);
+                count--;
+            }
+            // 下左->上左
+            for (z = w+1; z < m - i - 2; z++) {
+                result.add(matrix[w+1][z]);
+                count--;
+            }
+        }
+        return result;
+    }
 }
