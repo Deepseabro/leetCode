@@ -211,4 +211,22 @@ public class Solution {
         return p1;
     }
 
+    public ListNode detectCycle(ListNode head) {
+        ListNode slowIndex = head;
+        ListNode fastIndex = head;
+        while (fastIndex != null && fastIndex.next != null) {
+            slowIndex = slowIndex.next;
+            fastIndex = fastIndex.next.next;
+            if (slowIndex == fastIndex) {
+                ListNode temp = head;
+                while (temp != fastIndex) {
+                    temp = temp.next;
+                    fastIndex = fastIndex.next;
+                }
+                return temp;
+            }
+        }
+        return null;
+    }
+
 }
