@@ -113,4 +113,47 @@ public class Solution {
         }
         return true;
     }
+
+    public int[] intersection(int[] nums1, int[] nums2) {
+        HashSet<Integer> used = new HashSet<>();
+        HashSet<Integer> nums = new HashSet<>();
+        for (int i : nums2) {
+            nums.add(i);
+        }
+        for (int i = 0; i < nums1.length; i++) {
+            if (nums.contains(nums1[i])) {
+                used.add(nums1[i]);
+            }
+        }
+        int[] result = new int[used.size()];
+        int count = 0;
+        for (Integer integer : used) {
+            result[count++] = integer;
+        }
+        return result;
+    }
+    public boolean isHappy(int n) {
+        HashSet<Integer> used = new HashSet<>();
+        Integer squareNum = getSquareNum(n);
+        used.add(squareNum);
+        while (true) {
+            squareNum = getSquareNum(squareNum);
+            if (squareNum == 1){
+                return true;
+            }
+            if (used.contains(squareNum)) {
+                return false;
+            }
+            used.add(squareNum);
+        }
+    }
+    public Integer getSquareNum(int n) {
+        int sum = 0;
+        while (n > 0) {
+            int i = n % 10;
+            sum += i * i;
+            n = n / 10;
+        }
+        return sum;
+    }
 }
