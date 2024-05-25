@@ -156,4 +156,69 @@ public class Solution {
         }
         return sum;
     }
+
+    public int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int[] result = new int[]{-1,-1};
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(target - nums[i])) {
+                result[0] = map.get(target - nums[i]);
+                result[1] = i;
+                return result;
+            } else {
+                map.put(nums[i], i);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 超出时间限制了
+     */
+public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+    int result = 0;
+    int[] numsA = new int[nums1.length * nums2.length];
+    int[] numsB = new int[nums3.length * nums4.length];
+    int count = 0;
+    for (int k : nums1) {
+        for (int i1 : nums2) {
+            numsA[count] = k + i1;
+            count++;
+        }
+    }
+    count = 0;
+    for (int j : nums3) {
+        for (int i1 : nums4) {
+            numsB[count] = j + i1;
+            count++;
+        }
+    }
+    for (int i : numsA) {
+        for (int i1 : numsB) {
+            if (i + i1 == 0) {
+                result++;
+            }
+        }
+    }
+    return result;
+}
+
+    public int fourSumCountBetter(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        int result = 0;
+        Map<Integer, Integer> mapA = new HashMap<>();
+        for (int i : nums1) {
+            for (int i1 : nums2) {
+                int sum = i + i1;
+                mapA.put(sum,mapA.getOrDefault(sum, 0) + 1);
+            }
+        }
+        for (int i : nums3) {
+            for (int j : nums4) {
+                if (mapA.containsKey(-(i + j))) {
+                    result += mapA.getOrDefault(-i - j, 0);
+                }
+            }
+        }
+        return result;
+    }
 }
